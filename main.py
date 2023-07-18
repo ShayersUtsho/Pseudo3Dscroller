@@ -7,31 +7,36 @@ screen = ""
 
 arrow = {'left':0x25, 'up':0x26, 'right':0x27, 'down':0x28}
 
-world = list()
+delay = 0.02
 
 depth = 45
 height = 45
 width = 45
 
-cx = 20
-cy = 20
-cz = 20
+renderDepth = 45
+renderHeight = 45
+renderWidth = 45
 
-delay = 0.02
+worldstring = "".join(list(i if i != "\n" else "" for i in open("world.txt").read()))
 
-for x in range(depth):
-    plane = list()
-    for y in range(height):
-        line = list()
-        for z in range(width):
-            if x == 0 or y == 0 or z == 0 or x == depth-1  or y == height-1  or z == width-1:
-                line.append("#")
-            elif y%cy == 0 or x%cx == 0 or z%cz == 0:
-                line.append("#")
-            else:
-                line.append(" ")
-        plane.append(line)
-    world.append(plane)
+world = [[[worldstring[i*height*width + j*width + k] for k in range(width)] for j in range(height)] for i in range(depth)]
+
+# cx = 20
+# cy = 20
+# cz = 20
+# for x in range(depth):
+#     plane = list()
+#     for y in range(height):
+#         line = list()
+#         for z in range(width):
+#             if x == 0 or y == 0 or z == 0 or x == depth-1  or y == height-1  or z == width-1:
+#                 line.append("#")
+#             elif y%cy == 0 or x%cx == 0 or z%cz == 0:
+#                 line.append("#")
+#             else:
+#                 line.append(" ")
+#         plane.append(line)
+#     world.append(plane)
 
 current_plane = depth//2
 
@@ -45,16 +50,15 @@ for ch in charlist1:
 for i in range(depth - len(charlist)):
     charlist += " "
 
-visibleDepth = 45
 horizontalAngle = 0.5
 verticalAngle = -0.5
 
 def addSliceToScreen():
     templist = list()
-    for y in range(height):
-        for z in range(width):
+    for y in range(renderHeight):
+        for z in range(renderWidth):
             if world[current_plane][y][z] == " ":
-                for i in range(visibleDepth):
+                for i in range(renderDepth):
                     test = False
                     try:
                         test = world[current_plane-i][y-int(i*verticalAngle)][z-int(i*horizontalAngle)] == "#"
@@ -70,9 +74,9 @@ def addSliceToScreen():
     return "".join(templist)
 
 def addTextToScreen(text, startingX = 0, startingY = 0):
-    return screen[0 : startingX + startingY * width] + text + screen[startingX + startingY * width + len(text) : len(screen)]
+    return screen[0 : startingX + startingY * renderWidth] + text + screen[startingX + startingY * renderWidth + len(text) : len(screen)]
 
-system('mode ' + str(width) + ',' + str(height))
+system('mode ' + str(renderWidth) + ',' + str(renderHeight))
 system('color 1E')
 myConsole = win32console.CreateConsoleScreenBuffer(DesiredAccess = win32con.GENERIC_READ | win32con.GENERIC_WRITE, ShareMode=0, SecurityAttributes=None, Flags=1) # create screen buffer
 myConsole.SetConsoleActiveScreenBuffer() # set this buffer to be active
@@ -93,7 +97,7 @@ while True:
     if verticalAngle < -1.0:
         verticalAngle = -1.0
     screen = addSliceToScreen()
-    screen = addTextToScreen(str(horizontalAngle) + " " + str(verticalAngle), 5,5)
+    # screen = addTextToScreen(str(horizontalAngle) + " " + str(verticalAngle), 5,5)
     myConsole.WriteConsoleOutputCharacter(Characters=screen, WriteCoord=win32console.PyCOORDType(0,0))
     
     if keypress(arrow['up']) and verticalAngle < 1.0:
