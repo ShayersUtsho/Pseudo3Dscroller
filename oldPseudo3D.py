@@ -16,7 +16,9 @@ d = 9
 
 delay = 0.02
 
-c = 45
+cx = 45
+cy = 45
+cz = 45
 
 sp1 = {
 "h" : ax//2,
@@ -47,7 +49,7 @@ for x in range(ax):
         for z in range(az):
             if x == 0 or y == 0 or z == 0 or x == ax-1  or y == ay-1  or z == az-1:
                 line.append("#")
-            elif x%c == 0 or y%c == 0 or z%c == 0:
+            elif y%cy == 0 or x%cx == 0 or z%cz == 0:
                 line.append("#")
             elif (x-sp1["h"])**2 + (y-sp1["j"])**2 + (z-sp1["k"])**2 < sp1["rx"]:
                 line.append("#")
@@ -73,8 +75,9 @@ for i in range(ax - len(charlist)):
     charlist += " "
 
 d = 45
-mz = 1
-my = 1
+mz = 0.5
+my = -0.5
+
 
 def addSliceToScreen():
     templist = list()
@@ -96,6 +99,9 @@ def addSliceToScreen():
                 templist.append(charlist[0])
     return "".join(templist)
 
+def addTextToScreen(text):
+    return text + screen[len(text) : len(screen)]
+
 system('mode ' + str(az) + ',' + str(ay))
 system('color 1E')
 myConsole = win32console.CreateConsoleScreenBuffer(DesiredAccess = win32con.GENERIC_READ | win32con.GENERIC_WRITE, ShareMode=0, SecurityAttributes=None, Flags=1) # create screen buffer
@@ -109,15 +115,16 @@ while True:
     elif cp < 0:
         cp = 0
     screen = addSliceToScreen()
+    screen = addTextToScreen(str(mz) + " " + str(my))
     myConsole.WriteConsoleOutputCharacter(Characters=screen, WriteCoord=win32console.PyCOORDType(0,0))
     
-    if keypress(arrow['up']):
+    if keypress(arrow['up']) and my < 1.0:
         my += 0.05
-    if keypress(arrow['down']):
+    if keypress(arrow['down']) and my > -1.0:
         my -= 0.05
-    if keypress(arrow['left']):
+    if keypress(arrow['left']) and mz < 1.0:
         mz += 0.05
-    if keypress(arrow['right']):
+    if keypress(arrow['right']) and mz > -1.0:
         mz -= 0.05
     if keypress(ord('W')):
         cp += 1
