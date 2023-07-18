@@ -14,7 +14,7 @@ ay = 45
 az = 45
 d = 9
 
-delay = 0.01
+delay = 0.02
 
 c = 45
 
@@ -62,12 +62,17 @@ cp = ax//2
 
 #▒░
 
-charlist = "█▓@&$?+/,"
+charlist1 = "█▓@&$?+/,."
+charlist = ""
+shade_multiplier = 1
+
+for ch in charlist1:
+    charlist += ch * shade_multiplier
 
 for i in range(ax - len(charlist)):
     charlist += " "
 
-d = 9
+d = 45
 mz = 1
 my = 1
 
