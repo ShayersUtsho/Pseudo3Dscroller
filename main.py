@@ -17,6 +17,10 @@ renderDepth = 45
 renderHeight = 45
 renderWidth = 45
 
+renderposixionX = 0
+renderpositionY = 0
+renderpositionZ = 0
+
 worldstring = "".join(list(i if i != "\n" else "" for i in open("world.txt").read()))
 
 world = [[[worldstring[i*height*width + j*width + k] for k in range(width)] for j in range(height)] for i in range(depth)]
